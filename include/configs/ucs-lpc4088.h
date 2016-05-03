@@ -92,7 +92,7 @@
  * This should be setup to the board specific rate for the
  * external oscillator - the module has a 12 MHz crystal
  */
-#define CONFIG_LPC178X_EXTOSC_RATE		12000000
+#define CONFIG_LPC178X_EXTOSC_RATE	12000000
 
 /*
  * PLL0 is enabled, therefore
@@ -171,8 +171,8 @@
 
 #define CONFIG_MEM_RAM_BASE		0x10000000
 #define CONFIG_MEM_RAM_LEN		(32 * 1024)
-#define CONFIG_MEM_RAM_BUF_LEN	(16 * 1024)
-#define CONFIG_MEM_MALLOC_LEN	(12 * 1024)
+#define CONFIG_MEM_RAM_BUF_LEN		(16 * 1024)
+#define CONFIG_MEM_MALLOC_LEN		(12 * 1024)
 #define CONFIG_MEM_STACK_LEN		(4 * 1024)
 
 /*
@@ -183,10 +183,10 @@
 /*
  * Configuration of the external DRAM memory
  */
-#define CONFIG_NR_DRAM_BANKS	1
+#define CONFIG_NR_DRAM_BANKS		1
 #define CONFIG_SYS_RAM_CS		0       /* 0 .. 3 */
 #define CONFIG_SYS_RAM_BASE		(0xA0000000 +			\
-                                    (CONFIG_SYS_RAM_CS * 0x10000000))
+					(CONFIG_SYS_RAM_CS * 0x10000000))
 #define CONFIG_SYS_RAM_SIZE		(32 * 1024 * 1024)
 /*
  * Buffers for Ethernet DMA (cannot be in the internal System RAM)
@@ -197,46 +197,12 @@
  */
 #define CONFIG_LPC178X_EMC_HALFCPU
 
-/*
- * Configuration of the external Flash memory
- */
-/* Define this to enable NOR Flash support
- * The module has only SPIFI external NOR Flash
- * 
-#define CONFIG_SYS_FLASH_CS		0
- */
 
-#if defined(CONFIG_SYS_FLASH_CS)
-#define CONFIG_SYS_FLASH_CFG		0x81 /* 16 bit, Byte Lane enabled */
-#define CONFIG_SYS_FLASH_WE		0x2
-#define CONFIG_SYS_FLASH_OE		0x2
-#define CONFIG_SYS_FLASH_RD		0x1f
-#define CONFIG_SYS_FLASH_PAGE		0x1f
-#define CONFIG_SYS_FLASH_WR		0x1f
-#define CONFIG_SYS_FLASH_TA		0x1f
-
-#define CONFIG_SYS_FLASH_BANK1_BASE	0x80000000 /* hardwired for CS0 */
-
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_SIZE		(16 * 1024 * 1024)
-#define CONFIG_SYS_FLASH_CFI_WIDTH	FLASH_CFI_16BIT
-#define CONFIG_SYS_FLASH_BANKS_LIST	{ CONFIG_SYS_FLASH_BANK1_BASE }
-#define CONFIG_SYS_MAX_FLASH_BANKS	1
-#define CONFIG_SYS_MAX_FLASH_SECT	128
-
-/*
- * Store env in flash.
- */
-#define CONFIG_ENV_IS_IN_FLASH
-#else
 /*
  * Store env in memory only, if no flash.
  */
 #define CONFIG_ENV_IS_NOWHERE
 #define CONFIG_SYS_NO_FLASH
-#endif
-
 #define CONFIG_ENV_SIZE			(4 * 1024)
 #define CONFIG_ENV_ADDR			CONFIG_SYS_FLASH_BANK1_BASE
 #define CONFIG_INFERNO			1
@@ -293,7 +259,6 @@
  * may be received without processing until overflow happens).
  */
 #define CONFIG_SYS_RX_ETH_BUFFER	5
-
 #define CONFIG_SYS_TX_ETH_BUFFER	8
 
 /*
@@ -343,7 +308,7 @@
 #undef CONFIG_CMD_LOADS
 #undef CONFIG_CMD_MISC
 #define CONFIG_CMD_NET	/* Obligatory for the Ethernet driver to build */
-//#undef CONFIG_CMD_NFS
+#undef CONFIG_CMD_NFS
 #undef CONFIG_CMD_SOURCE
 #undef CONFIG_CMD_XIMG
 #define CONFIG_CMD_PING
@@ -352,7 +317,7 @@
 /*
  * To save memory disable long help
  */
-#undef CONFIG_SYS_LONGHELP
+//#undef CONFIG_SYS_LONGHELP
 
 /*
  * Max number of command args
@@ -362,43 +327,33 @@
 /*
  * Auto-boot sequence configuration
  */
-#define CONFIG_BOOTDELAY		-1
+#define CONFIG_BOOTDELAY		3
 #define CONFIG_ZERO_BOOTDELAY_CHECK
-/*
-#define CONFIG_HOSTNAME			lpc-lnx-evb
-#define CONFIG_BOOTARGS			"lpc178x_platform=lpc-lnx-evb "\
+#define CONFIG_HOSTNAME			ucs-lpc4088
+#define CONFIG_BOOTARGS			"lpc178x_platform=ea-lpc1788 "\
 					"console=ttyS0,115200 panic=10"
-#define CONFIG_BOOTCOMMAND		"run flashboot"
-*/
+#define CONFIG_BOOTCOMMAND		"run nfsboot"
 /*
  * This ensures that the board-specific misc_init_r() gets invoked.
  */
 #define CONFIG_MISC_INIT_R
 
 /*
- * Short-cuts to some useful commands (macros)
-#define CONFIG_EXTRA_ENV_SETTINGS				\
-	"loadaddr=0xA0000000\0"					\
-	"addip=setenv bootargs ${bootargs} ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:eth0:off\0"				\
-	"flashaddr=80020000\0"					\
-	"flashboot=run addip;bootm ${flashaddr}\0"		\
-	"ethaddr=C0:B1:3C:88:88:83\0"				\
-	"ipaddr=172.17.4.207\0"					\
-	"serverip=172.17.0.1\0"					\
-	"image=lpc178x/uImage\0"				\
-	"netboot=tftp ${image};run addip;bootm\0"		\
-	"update=tftp ${image};"					\
-	"prot off ${flashaddr} +${filesize};"			\
-	"era ${flashaddr} +${filesize};"			\
-	"cp.b ${loadaddr} ${flashaddr} ${filesize}\0"
+ * Set additional environment variables
  */
 #define CONFIG_EXTRA_ENV_SETTINGS				\
 	"loadaddr=0xA0000000\0"					\
 	"ethaddr=02:10:20:30:40:50\0"				\
-	"ipaddr=192.168.168.30\0"					\
-	"netmask=255.255.255.0\0"					\
-	"serverip=192.168.168.29\0"					\
-
+	"ipaddr=192.168.168.30\0"				\
+	"netmask=255.255.255.0\0"				\
+	"serverip=192.168.168.29\0"				\
+	"gatewayip=192.168.168.254\0"				\
+	"kernel=lpc4088/uImage\0"				\
+	"expfs=/srv/exports/lpc4088/minimal\0"			\
+	"setbargs=setenv bootargs ${bootargs} "			\
+	    "ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:eth0:off:: " \
+	    "root=/dev/nfs rw nfsroot=${serverip}:${expfs}\0"	\
+	"nfsboot=tftp ${kernel};run setbargs;bootm\0"
 /*
  * Linux kernel boot parameters configuration
  */

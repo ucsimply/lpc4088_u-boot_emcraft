@@ -61,6 +61,18 @@
 	(slew  << LPC178X_GPIO_CONFIG_SLEW_BIT ) | \
 	(od    << LPC178X_GPIO_CONFIG_OD_BITS  ))
 /*
+ * Type W pins (filter pins)
+ */
+#define LPC178X_GPIO_CONFIG_W(func,mode,hys,inv,ad,fi,slew,od) \
+	((func << LPC178X_GPIO_CONFIG_FUNC_BITS) | \
+	(mode  << LPC178X_GPIO_CONFIG_MODE_BITS) | \
+	(hys   << LPC178X_GPIO_CONFIG_HYS_BIT  ) | \
+	(inv   << LPC178X_GPIO_CONFIG_INV_BIT  ) | \
+	(ad    << LPC178X_GPIO_CONFIG_ADMODE_BIT  ) | \
+	(fi   << LPC178X_GPIO_CONFIG_FILTER_BIT  ) | \
+	(slew  << LPC178X_GPIO_CONFIG_SLEW_BIT ) | \
+	(od    << LPC178X_GPIO_CONFIG_OD_BITS  ))
+/*
  * TBD: similar macros for other pin types (A, U, I, W)
  */
 
@@ -100,6 +112,14 @@ int lpc178x_gpio_config(const struct lpc178x_gpio_dsc *dsc, u32 regval);
  */
 extern int lpc178x_gpio_config_table(
 	const struct lpc178x_gpio_pin_config *table, unsigned int len);
+
+/*
+ * output=0: Set a GPIO pin as an input.
+ * output=1: Set a GPIO pin as an output.
+ *
+ * Returns 0 on success, -EINVAL otherwise.
+ */
+int lpc178x_gpio_config_direction(const struct lpc178x_gpio_dsc *dsc, int output);
 
 /*
  * Set a GPIO pin as an input.

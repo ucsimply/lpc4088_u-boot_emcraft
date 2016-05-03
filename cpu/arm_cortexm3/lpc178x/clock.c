@@ -283,86 +283,45 @@ static u32 clock_val[CLOCK_END];
  * PHY REF_CLK that does not exceed 2.5 MHz.
  */
 #ifdef CONFIG_LPC178X_ETH
+
 #if !defined(CONFIG_LPC178X_ETH_DIV_SEL)
 #error CONFIG_LPC178X_ETH_DIV_SEL is not set
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 0	/* HCLK/4 */
-	#if LPC178X_EMC_RATE > 10 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-/* CONFIG_LPC178X_ETH_DIV_SEL=1 leads to the same HCLK/4 */
+	#define	LPC178X_ETH_DIVIDER	4
+#elif CONFIG_LPC178X_ETH_DIV_SEL == 1	/* HCLK/4 */
+	#define	LPC178X_ETH_DIVIDER	4
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 2	/* HCLK/6 */
-	#if LPC178X_EMC_RATE > 15 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 10 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	6
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 3	/* HCLK/8 */
-	#if LPC178X_EMC_RATE > 20 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 15 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	8
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 4	/* HCLK/10 */
-	#if LPC178X_EMC_RATE > 25 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 20 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	10
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 5	/* HCLK/14 */
-	#if LPC178X_EMC_RATE > 35 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 25 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	14
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 6	/* HCLK/20 */
-	#if LPC178X_EMC_RATE > 50 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 35 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	20
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 7	/* HCLK/28 */
-	#if LPC178X_EMC_RATE > 70 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 50 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	28
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 8	/* HCLK/36 */
-	#if LPC178X_EMC_RATE > 80 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 70 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	36
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 9	/* HCLK/40 */
-	#if LPC178X_EMC_RATE > 90 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 80 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	40
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 10	/* HCLK/44 */
-	#if LPC178X_EMC_RATE > 100 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
-	#endif
-	#if LPC178X_EMC_RATE <= 90 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
+	#define	LPC178X_ETH_DIVIDER	44
 #elif CONFIG_LPC178X_ETH_DIV_SEL == 11	/* HCLK/48 */
-	#if LPC178X_EMC_RATE > 120 * 1000 * 1000
+	#define	LPC178X_ETH_DIVIDER	48
+#else
+	#define	LPC178X_ETH_DIVIDER	1
+#endif /* CONFIG_LPC178X_ETH_DIV_SEL */
+
+#if (LPC178X_ETH_DIVIDER == 1)
+	#error Unknown value of CONFIG_LPC178X_ETH_DIV_SEL
+#else
+	#if ((LPC178X_CPU_RATE / LPC178X_ETH_DIVIDER) > 2500000)
 	#error CONFIG_LPC178X_ETH_DIV_SEL is too small
 	#endif
-	#if LPC178X_EMC_RATE <= 100 * 1000 * 1000
-	#error CONFIG_LPC178X_ETH_DIV_SEL is too large
-	#endif
-#else
-#error Unknown value of CONFIG_LPC178X_ETH_DIV_SEL
-#endif /* CONFIG_LPC178X_ETH_DIV_SEL */
+#endif
+
 #endif /* CONFIG_LPC178X_ETH */
 
 /*

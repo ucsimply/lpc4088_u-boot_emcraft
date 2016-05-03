@@ -32,7 +32,12 @@ int print_cpuinfo(void)
 {
 	char buf[3][32];
 
+#if defined(CONFIG_SYS_ARMCORTEXM4)
+	printf("CPU  : %s\n", "LPC408x/7x series (Cortex-M4)");
+#else
 	printf("CPU  : %s\n", "LPC178x/7x series (Cortex-M3)");
+#endif
+
 
 	strmhz(buf[0], clock_get(CLOCK_SYSTICK));
 	strmhz(buf[1], clock_get(CLOCK_EMCCLK));

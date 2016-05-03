@@ -3274,6 +3274,9 @@ twr-k70f120m_config : unconfig
 lpc-lnx-evb_config :  unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm_cortexm3 lpc-lnx-evb emcraft lpc178x
 
+ucs-lpc4088_config :  unconfig
+	@$(MKCONFIG) $(@:_config=) arm arm_cortexm3 ucs-lpc4088 NULL lpc178x
+
 k61-som_config \
 k61-som-120_config \
 k70-som-120_config \

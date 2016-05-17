@@ -37,61 +37,61 @@
  */
 
 /* CPU clock = 108 MHz, EMC clock = 1/2 CPU clock = 54 MHz */
-#define EMC_FREQ_HZ         54000000
-#define EMC_CLK_NS          18.52
+#define EMC_FREQ_HZ		54000000
+#define EMC_CLK_NS		18.52
 
-#define CLK_DELAY           7
+#define CLK_DELAY		7
 
-#define SDR_CMD_NOP         0x00000183
-#define SDR_CMD_PALL        0x00000103
-#define SDR_CMD_MODE        0x00000083
-#define SDR_CMD_NORMAL      0x00000000
+#define SDR_CMD_NOP		0x00000183
+#define SDR_CMD_PALL		0x00000103
+#define SDR_CMD_MODE		0x00000083
+#define SDR_CMD_NORMAL		0x00000000
 
 /* settings for AS4C16M16S-7BCN device
  * - 256Mbit, 16M x 16bit, 4 Banks x 4M words x 16bit
  * - 13 bit row address A[0..12] = 8192 rows
  * - 9 bit column address A[0..8] = 512 columns
  */
-#define SDR_ROWS            8192
-#define SDR_RAS_CLK         2
-#define SDR_CAS_CLK         2
-#define SDR_BURST_LEN_8     3
-#define SDR_MODEREG         ((SDR_CAS_CLK << 4) | SDR_BURST_LEN_8)
-#define SDR_ADDR_MODEREG    (CONFIG_SYS_RAM_BASE | (SDR_MODEREG << (9 + 2 + 1)))
+#define SDR_ROWS		8192
+#define SDR_RAS_CLK		2
+#define SDR_CAS_CLK		2
+#define SDR_BURST_LEN_8		3
+#define SDR_MODEREG		((SDR_CAS_CLK << 4) | SDR_BURST_LEN_8)
+#define SDR_ADDR_MODEREG	(CONFIG_SYS_RAM_BASE | (SDR_MODEREG << (9 + 2 + 1)))
 
-#define SDR_REFRESH_NS  (64000000 / SDR_ROWS) // 7812.5
-#define SDR_REFRESH     26                    // (7813 / 18.52) / 16
-#define SDR_READ_CFG    1
-#define SDR_RAS_CAS     ((SDR_CAS_CLK << 8) | SDR_RAS_CLK )
-#define SDR_SIZE_256    (0x03 << 9)
-#define SDR_BUS_16      (0x01 << 7)
-#define SDR_CONFIG      (SDR_SIZE_256 | SDR_BUS_16)
+#define SDR_REFRESH_NS		(64000000 / SDR_ROWS) // 7812.5
+#define SDR_REFRESH		26                    // (7813 / 18.52) / 16
+#define SDR_READ_CFG		1
+#define SDR_RAS_CAS		((SDR_CAS_CLK << 8) | SDR_RAS_CLK )
+#define SDR_SIZE_256		(0x03 << 9)
+#define SDR_BUS_16		(0x01 << 7)
+#define SDR_CONFIG		(SDR_SIZE_256 | SDR_BUS_16)
 
 /* ****************** */
 /* 1 cycle = 18.52 ns */
 /* ****************** */
-/* Precharge Command Period                             21 ns */
-#define SDR_tRP         1
-/* Active to Precharge Command Period                   49 ns */
-#define SDR_tRAS        2
+/* Precharge Command Period				21 ns */
+#define SDR_tRP			1
+/* Active to Precharge Command Period			49 ns */
+#define SDR_tRAS		2
 /* Self Refresh Exit Time (use tXSR if not specified) */
-#define SDR_tSREX       3
-/* Last Data Out to Active Time                         1 CLK */
-#define SDR_tAPR        1
-/* Data In to Active Command Time                       CAS_CLK + tRP */
-#define SDR_tDAL        3
-/* Write Recovery Time                                  14 ns */
-#define SDR_tWR         0
-/* Active to Active Command Period                      63 ns */
-#define SDR_tRC         3
-/* Auto-refresh Period                                  63 ns */
-#define SDR_tRFC        3
-/* Exit Self Refresh  (tRC + tIS)                       63 + 1.5 ns */
-#define SDR_tXSR        3
-/* Active Bank A to Active Bank B Time                  14 ns */
-#define SDR_tRRD        0
-/* Load Mode register command to Active Command         14 ns*/
-#define SDR_tMRD        0
+#define SDR_tSREX		3
+/* Last Data Out to Active Time				1 CLK */
+#define SDR_tAPR		1
+/* Data In to Active Command Time			CAS_CLK + tRP */
+#define SDR_tDAL		3
+/* Write Recovery Time					14 ns */
+#define SDR_tWR			0
+/* Active to Active Command Period			63 ns */
+#define SDR_tRC			3
+/* Auto-refresh Period					63 ns */
+#define SDR_tRFC		3
+/* Exit Self Refresh  (tRC + tIS)			63 + 1.5 ns */
+#define SDR_tXSR		3
+/* Active Bank A to Active Bank B Time			14 ns */
+#define SDR_tRRD		0
+/* Load Mode register command to Active Command		14 ns */
+#define SDR_tMRD		0
 
 
 /* EMC data pins (DQ0..DQ15) */
@@ -255,61 +255,58 @@ static const struct lpc178x_gpio_pin_config ea_lpc1788_gpio[] = {
 
 };
 
+static void gpio_init(void);
+static void eth_phy_reset(void);
+
 /*
  * Configure all necessary GPIO pins
  */
 static void gpio_init(void)
 {
 	struct lpc178x_gpio_dsc dsc;
-
-	/*
-	 * Enable power on GPIO. This is not really necessary, because power
-	 * on GPIO is enabled on SoC reset.
-	 */
-	lpc178x_periph_enable(LPC178X_SCC_PCONP_PCGPIO_MSK, 1);
-
-    /* reset Ethernet PHY KSZ8081 */
-	/* P0.4 - Reset for KSZ8081 PHY */
-    dsc.port = 0;
-    dsc.pin  = 4;
-    lpc178x_gpio_config(&dsc, LPC178X_GPIO_CONFIG_D(0, LPC178X_NO_PULLUP, 0, 0, 0, 0));
-    lpc178x_gpio_config_direction(&dsc, 1);
-    lpc178x_gpout_set(&dsc, 0);
-    udelay(1000);
-    lpc178x_gpout_set(&dsc, 1);
-    udelay(1000);
-
-	/*
-	 * Configure GPIO pins using the `ea_lpc1788_gpio[]` table
-	 */
+    
+	/* Configure GPIO pins using the `ea_lpc1788_gpio[]` table */
 	lpc178x_gpio_config_table(ea_lpc1788_gpio, ARRAY_SIZE(ea_lpc1788_gpio));
 
 #ifdef CONFIG_NR_DRAM_BANKS
-	/*
-	 * Configure GPIO pins used for the External Memory Controller (EMC)
-	 */
-	/* Configure EMC data pins (DQ0..DQ15) */
+	/* Configure EMC data pins (D0..D15) */
 	dsc.port = 3;
 	for (dsc.pin = 0; dsc.pin < LPC178X_EMC_DATA_PINS; dsc.pin++)
 		lpc178x_gpio_config(&dsc, LPC178X_GPIO_EMC_REGVAL);
 
-	/*
-	 * Configure EMC row/column address pins (A0..A12) and
-	 * NOR FLash address pins.
-	*/
+	/* Configure EMC row/column address pins (A0..A12) */
 	dsc.port = 4;
 	for (dsc.pin = 0; dsc.pin < LPC178X_EMC_ADDR_PINS; dsc.pin++)
 		lpc178x_gpio_config(&dsc, LPC178X_GPIO_EMC_REGVAL);
 #endif
 }
 
+/* 
+ * Reset Ethernet PHY KSZ8081
+ * P0.4 - drives PHY reset signal
+ */
+#ifdef CONFIG_LPC178X_ETH
+static void eth_phy_reset(void)
+{
+	struct lpc178x_gpio_dsc dsc;
+
+	dsc.port = 0;
+	dsc.pin  = 4;
+	lpc178x_gpio_config(&dsc, 
+		LPC178X_GPIO_CONFIG_D(0, LPC178X_NO_PULLUP, 0, 0, 0, 0));
+	lpc178x_gpio_config_direction(&dsc, 1);
+	lpc178x_gpout_set(&dsc, 0);
+	udelay(1000);
+	lpc178x_gpout_set(&dsc, 1);
+	udelay(1000);
+}
+#endif
+
 /*
  * Early hardware init.
  */
 int board_init(void)
 {
-    struct lpc178x_gpio_dsc dsc;
-    
 	/* Enable power on EMC */
 	lpc178x_periph_enable(LPC178X_SCC_PCONP_PCEMC_MSK, 1);
 	/* Clock delay for EMC */
@@ -318,6 +315,15 @@ int board_init(void)
 	LPC178X_EMC->emcctrl = 1;
 	/* Little-endian mode */
 	LPC178X_EMC->emccfg = 0;
+	/* Enable power on GPIO. 
+	 * This is not really necessary, because 
+	 * power on GPIO is enabled on SoC reset.
+	 */
+	lpc178x_periph_enable(LPC178X_SCC_PCONP_PCGPIO_MSK, 1);
+	/* Reset Ethernet PHY */
+#ifdef CONFIG_LPC178X_ETH
+	eth_phy_reset();
+#endif
 	/* Enable GPIO pins */
 	gpio_init();
 
@@ -330,7 +336,6 @@ int board_init(void)
 int checkboard(void)
 {
 	printf("Board: Module LPC4088, www.ucsimply.cz\n");
-
 	return 0;
 }
 
@@ -358,10 +363,10 @@ int dram_init(void)
 	/* Address mapping - DynMem Configuration */
 	dy->cfg = SDR_CONFIG;
 
-    /* RAS and CAS delay */
+	/* RAS and CAS delay */
 	dy->rascas = SDR_RAS_CAS;
     
-    /* Read strategy - command delayed */
+	/* Read strategy - command delayed */
 	LPC178X_EMC->dy_rdcfg = SDR_READ_CFG;
 
 	/* Configure DRAM timing */
@@ -392,8 +397,8 @@ int dram_init(void)
 
 	/* MODE command */
 	LPC178X_EMC->dy_ctrl = SDR_CMD_MODE;
-    /* Read from the address to set the SDRAM Mode register */
-    tmp32 = *(volatile u32 *)(SDR_ADDR_MODEREG);
+	/* Read from the address to set the SDRAM Mode register */
+	tmp32 = *(volatile u32 *)(SDR_ADDR_MODEREG);
 
 	/* Normal mode */
 	LPC178X_EMC->dy_ctrl = SDR_CMD_NORMAL;

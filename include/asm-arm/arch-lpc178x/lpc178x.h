@@ -50,12 +50,16 @@
  * 1-bit masks for PCONP (Power Control for Peripherals register) for different
  * peripherals that enable power on them. One of these masks should be passed
  * as the first argument of `lpc178x_periph_enable`.
+ * 
+ * SPIFI interface (PCSPIFI bit) is available only on
+ * LPC1773 and LPC40XX devices
  */
 #define LPC178X_SCC_PCONP_PCUART0_MSK	(1 << 3)
 #define LPC178X_SCC_PCONP_PCUART1_MSK	(1 << 4)
 #define LPC178X_SCC_PCONP_PCUART4_MSK	(1 << 8)
 #define LPC178X_SCC_PCONP_PCEMC_MSK	(1 << 11)
 #define LPC178X_SCC_PCONP_PCGPIO_MSK	(1 << 15)
+#define LPC178X_SCC_PCONP_PCSPIFI_MSK	(1 << 16)
 #define LPC178X_SCC_PCONP_PCUART2_MSK	(1 << 24)
 #define LPC178X_SCC_PCONP_PCUART3_MSK	(1 << 25)
 #define LPC178X_SCC_PCONP_PCENET_MSK	(1 << 30)
@@ -107,12 +111,22 @@ struct lpc178x_scc_regs {
 	/* 0x400FC110 */
 	u32 rsv2[36];
 
+
 	/* 0x400FC1A0 */
 	u32 scs;	/* System Controls and Status register */
 	u32 rsv3;
 	u32 pclksel;	/* Peripheral Clock Selection register */
+
 	/* 0x400FC1AC */
-	u32 rsv4[7];
+	u32 rsv4[2];
+
+	/* 0x400FC1B4 */
+	u32 spificlksel;/* SPIFI Clock Selection register 
+			 * SPIFI interface is available only
+			 * on LPC40XX and LPC1773 devices */
+
+	/* 0x400FC1B8 */
+	u32 rsv4a[4];
 
 	/* 0x400FC1C8 */
 	u32 clkoutcfg;

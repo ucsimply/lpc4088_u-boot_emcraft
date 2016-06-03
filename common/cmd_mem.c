@@ -33,7 +33,7 @@
 #include <dataflash.h>
 #endif
 #include <watchdog.h>
-#ifdef CONFIG_SPIFI
+#if defined(CONFIG_SPIFI) || defined(CONFIG_LPC40XX_SPIFI)
 #include <spifi.h>
 #endif
 #ifdef CONFIG_ENVM
@@ -456,7 +456,7 @@ int do_mem_cp ( cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 #endif
 
-#ifdef CONFIG_SPIFI
+#if defined (CONFIG_SPIFI) || defined(CONFIG_LPC40XX_SPIFI)
 	if (spifi_addr(dest) || spifi_addr(dest + count)) {
 		if (spifi_addr(addr) || spifi_addr(addr + count)) {
 			puts ("Cannot copy from SPIFI to SPIFI, aborting.\n\r");

@@ -30,6 +30,10 @@ include $(TOPDIR)/config.mk
 LIB	= $(obj)lib$(SOC).a
 
 COBJS	:= clock.o cpu.o envm.o power.o soc.o wdt.o
+ifeq ($(CONFIG_LPC40XX_SPIFI),y)
+COBJS	+= spifi-lpc40xx.o
+endif
+
 SOBJS	:=
 
 SRCS	:= $(COBJS:.o=.c)

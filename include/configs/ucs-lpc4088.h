@@ -197,6 +197,18 @@
  */
 #define CONFIG_LPC178X_EMC_HALFCPU
 
+/* 
+ * Only LPC40XX devices are equipped with SPIFI interface
+ * The uCSimply LPC4088 module has QSPI W25Q64FV Flash
+ * attached to the SPIFI interface
+ * Uncomment the following line to enable 
+ * the LPC40XX SPIFI interface 
+ */
+#define CONFIG_LPC40XX_SPIFI
+#ifdef CONFIG_LPC40XX_SPIFI
+#define CONFIG_SPIFI_BASE		0x28000000
+#define CONFIG_SPIFI_SIZE		(8*1024*1024)
+#endif
 
 /*
  * Store env in memory only, if no flash.
@@ -330,7 +342,7 @@
 #define CONFIG_BOOTDELAY		3
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 #define CONFIG_HOSTNAME			ucs-lpc4088
-#define CONFIG_BOOTARGS			"lpc178x_platform=ea-lpc1788 "\
+#define CONFIG_BOOTARGS			"lpc178x_platform=ucs-lpc4088 "\
 					"console=ttyS0,115200 panic=10"
 #define CONFIG_BOOTCOMMAND		"run nfsboot"
 /*

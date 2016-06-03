@@ -29,6 +29,9 @@
 
 #include <common.h>
 #include <netdev.h>
+#if defined(CONFIG_LPC40XX_SPIFI)
+#include <spifi.h>
+#endif
 
 #include <asm/arch/lpc178x_gpio.h>
 
@@ -253,6 +256,24 @@ static const struct lpc178x_gpio_pin_config ea_lpc1788_gpio[] = {
 	{{1, 17}, LPC178X_GPIO_CONFIG_W(1, LPC178X_NO_PULLUP, 0, 0, 1, 0, 0, 0)},
 #endif /* CONFIG_LPC178X_ETH */
 
+#ifdef CONFIG_LPC40XX_SPIFI
+	/*
+	 * GPIO configuration for SPIFI (only LPC40XX parts)
+	 */
+	/* P0.15 (D) = SPIFI_IO_2 */
+	{{0, 15}, LPC178X_GPIO_CONFIG_D(5, LPC178X_NO_PULLUP, 0, 0, 1, 0)},
+	/* P0.16 (D) = SPIFI_IO_3 */
+	{{0, 16}, LPC178X_GPIO_CONFIG_D(5, LPC178X_NO_PULLUP, 0, 0, 1, 0)},
+	/* P0.17 (D) = SPIFI_IO_1 */
+	{{0, 17}, LPC178X_GPIO_CONFIG_D(5, LPC178X_NO_PULLUP, 0, 0, 1, 0)},
+	/* P0.18 (D) = SPIFI_IO_0 */
+	{{0, 18}, LPC178X_GPIO_CONFIG_D(5, LPC178X_NO_PULLUP, 0, 0, 1, 0)},
+	/* P0.22 (D) = SPIFI_CLK */
+	{{0, 22}, LPC178X_GPIO_CONFIG_D(5, LPC178X_NO_PULLUP, 0, 0, 1, 0)},
+	/* P2.7  (D) = SPIFI_CS */
+	{{2,  7}, LPC178X_GPIO_CONFIG_D(5, LPC178X_NO_PULLUP, 0, 0, 1, 0)},
+#endif
+
 };
 
 static void gpio_init(void);
@@ -345,7 +366,12 @@ int checkboard(void)
 #ifdef CONFIG_MISC_INIT_R
 int misc_init_r(void)
 {
-	/* TBD */
+#if defined(CONFIG_LPC40XX_SPIFI)
+	lpc178x_periph_enable(LPC178X_SCC_PCONP_PCSPIFI_MSK, 1);
+	if (spifi_initialize()) {
+		return 1;
+	}
+#endif
 	return 0;
 }
 #endif /* CONFIG_MISC_INIT_R */

@@ -134,6 +134,13 @@ static u32 clock_val[CLOCK_END];
 #define LPC178X_SCC_USBCLKSEL_USBSEL_PLL1_MSK \
 	(2 << LPC178X_SCC_USBCLKSEL_USBSEL_BITS)
 
+/* SPIFI Clock Selection register 
+ * SPIFI interface is available only
+ * on LPC40XX and LPC1773 devices 
+ */
+#define LPC40XX_SCC_SPIFICLKSEL_SPIFIDIV_MSK	4
+#define LPC40XX_SCC_SPIFICLKSEL_SPIFISEL_MSK	(1 << 8)
+
 /*
  * Calculate clock rates
  */
@@ -421,6 +428,15 @@ static void clock_setup(void)
 		(CONFIG_LPC178X_USB_DIV << LPC178X_SCC_USBCLKSEL_USBDIV_BITS) |
 		LPC178X_SCC_USBCLKSEL_USBSEL_PLL1_MSK;
 #endif /* CONFIG_LPC178X_USB_DIV */
+
+#ifdef CONFIG_LPC40XX_SPIFI
+	/* 
+	 * SPIFI clock 
+	 */
+	LPC178X_SCC->spificlksel = (
+		LPC40XX_SCC_SPIFICLKSEL_SPIFISEL_MSK | LPC40XX_SCC_SPIFICLKSEL_SPIFIDIV_MSK);
+
+#endif /* CONFIG_LPC40XX_SPIFI */
 }
 
 /*

@@ -197,6 +197,8 @@
  */
 #define CONFIG_LPC178X_EMC_HALFCPU
 
+#define CONFIG_SYS_NO_FLASH
+
 /* 
  * Only LPC40XX devices are equipped with SPIFI interface
  * The uCSimply LPC4088 module has QSPI W25Q64FV Flash
@@ -210,15 +212,24 @@
 #define CONFIG_SPIFI_SIZE		(8*1024*1024)
 #endif
 
+/* ENVM */
+#define CONFIG_ENVM			1
+#define CONFIG_SYS_ENVM_BASE		CONFIG_MEM_NVM_BASE
+#define CONFIG_SYS_ENVM_LEN		CONFIG_MEM_NVM_LEN
+
+/*
+ * Environment
+ */
+#define CONFIG_ENV_IS_IN_ENVM
+#define CONFIG_ENV_OVERWRITE		1
+#define CONFIG_ENV_SIZE			(4 * 1024)
+#define CONFIG_ENV_ADDR \
+	(CONFIG_SYS_ENVM_BASE + CONFIG_SYS_ENVM_LEN - (128 * 1024))
+
 /*
  * Store env in memory only, if no flash.
- */
 #define CONFIG_ENV_IS_NOWHERE
-#define CONFIG_SYS_NO_FLASH
-#define CONFIG_ENV_SIZE			(4 * 1024)
-#define CONFIG_ENV_ADDR			CONFIG_SYS_FLASH_BANK1_BASE
-#define CONFIG_INFERNO			1
-#define CONFIG_ENV_OVERWRITE		1
+ */
 
 /*
  * Serial console configuration

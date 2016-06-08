@@ -200,17 +200,13 @@
 #define CONFIG_SYS_NO_FLASH
 
 /* 
- * Only LPC40XX devices are equipped with SPIFI interface
+ * Only LPC40XX devices are equipped with a SPIFI interface
  * The uCSimply LPC4088 module has QSPI W25Q64FV Flash
  * attached to the SPIFI interface
- * Uncomment the following line to enable 
- * the LPC40XX SPIFI interface 
  */
 #define CONFIG_LPC40XX_SPIFI
-#ifdef CONFIG_LPC40XX_SPIFI
 #define CONFIG_SPIFI_BASE		0x28000000
 #define CONFIG_SPIFI_SIZE		(8*1024*1024)
-#endif
 
 /* ENVM */
 #define CONFIG_ENVM			1
@@ -350,7 +346,7 @@
 /*
  * Auto-boot sequence configuration
  */
-#define CONFIG_BOOTDELAY		3
+#define CONFIG_BOOTDELAY		5
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 #define CONFIG_HOSTNAME			ucs-lpc4088
 #define CONFIG_BOOTARGS			"lpc178x_platform=ucs-lpc4088 "\
@@ -373,10 +369,13 @@
 	"gatewayip=192.168.168.254\0"				\
 	"kernel=lpc4088/uImage\0"				\
 	"expfs=/srv/exports/lpc4088/minimal\0"			\
-	"setbargs=setenv bootargs ${bootargs} "			\
-	    "ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:eth0:off:: " \
-	    "root=/dev/nfs rw nfsroot=${serverip}:${expfs}\0"	\
-	"nfsboot=tftp ${kernel};run setbargs;bootm\0"
+	"rootdev=/dev/mtdblock1\0"				\
+	"roottype=jffs2\0"					\
+	"addip=setenv bootargs ${bootargs} ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:eth0:off::\0" \
+	"addnfsroot=setenv bootargs ${bootargs} root=/dev/nfs rw nfsroot=${serverip}:${expfs}\0" \
+	"addflashroot=setenv bootargs ${bootargs} root=${rootdev} rw rootfstype=${roottype}\0" \
+	"nfsboot=tftp ${kernel};run addip;run addnfsroot;bootm\0" \
+	"flashboot=cp 28000000 A0000000 140000;run addip;run addflashroot;bootm\0" \
 /*
  * Linux kernel boot parameters configuration
  */
